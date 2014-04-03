@@ -1,0 +1,39 @@
+Chart:
+	title: My Song
+	composer: Me
+	- line0: 
+		- measure0: 
+			- chord0:
+				root: F
+				type: m7
+				length: 2
+			- chord0:
+				root: Bb
+				type: sus
+				length: 2
+		- measure1:
+			- chord0:
+				root: Eb
+				type: M7
+				length: 2
+			- chord1:
+				root: C
+				type: m7
+				length: 2
+	- line1:
+		measure0:
+			- chord0:
+				root: F
+				type: m7
+				length: 2
+			- chord1:
+				root: Bb
+				type: sus
+				length: 2
+		- measure1:
+			- chord:
+				root: Eb
+				type: M7
+				length: 4
+
+
