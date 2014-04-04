@@ -12,7 +12,8 @@ Example
 
 ```
 title: The Song
-author: Arthur Lewis
+composer: Arthur Lewis
+tempo: 120
 [ V C V B V C ]
 
 VERSE
@@ -38,7 +39,7 @@ A Chartdown document has the extension .chartdown, and it has two main parts.
 
 ```
 title: A chart
-author: This guy
+composer: This guy
 tempo: 127
 ```
 

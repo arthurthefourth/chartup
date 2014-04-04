@@ -1,10 +1,10 @@
 \header{
-  title = <%= @title %>
-  composer = <%= @composer %>
+  title = "<%= @title %>"
+  composer = "<%= @composer %>"
 }
 
 harmonies = \chordmode {
-  <%= @all_chords %>
+  <%= all_chords(:lilypond) %>
 }
 
 % Macro to print single slash
@@ -36,9 +36,9 @@ comp = #(define-music-function (parser location count) (integer?)
 	\relative c'' {
 	  \override Score.RehearsalMark.self-alignment-X = #LEFT
 	  % \mark \markup{ \right-align \box "CHORUS" }
-    <%= @lines.each do |line| %> 
+    <% lines.each do |line| %> 
 	  \comp #<%= line.length %> \break
-    <%= end %> 
+    <% end %> 
 	}
 }
 >>

@@ -1,10 +1,21 @@
 require 'erb'
-
+require 'Open3'
 
 module Chartdown
 
-  class Chart
+  def Chartdown.test_chart
+    d = <<-chart
+        title: Some chords
+        composer: Arthur Lewis
+        Fm Bb | Gm C | Bbsus | Eb
+        Am7 D7 | G D E Bm | Cm D7 | G
+        E | E | E | E | em
+        chart
 
+    c = Chartdown::Chart.new(d)
+  end
+  class Chart
+    attr_accessor :lines, :title, :composer
     def initialize(string)
 
       raise ArgumentError 'Chart string is not a string' unless string.is_a? String
@@ -21,7 +32,7 @@ module Chartdown
       end
 
       if @line_array[0].downcase.start_with? 'composer:'
-        @composer = line_array[0].split('composer:')[1].strip
+        @composer = @line_array[0].split('composer:')[1].strip
         @line_array.shift
       end
 
@@ -41,6 +52,16 @@ module Chartdown
     def to_ly
       # Figure out how long each chord is, and how long each line is
       # For each line, create enough beats and a break
+      template = File.read('./chartdown.ly.erb')
+      puts template
+      renderer = ERB.new(template)
+      rendered = renderer.result(binding)
+      File.open('./test.ly', 'w') { |file| file.write(rendered) }
+      rendered
+    end
+
+    def output_lilypond
+      o, s = Open3.capture2("lilypond --output=test -", :stdin_data => to_ly)
     end
 
     def to_vex
@@ -52,9 +73,30 @@ module Chartdown
     def to_abc
     end
 
+    def all_chords(format)
+      output_string = ''
+      case format
+      when :lilypond
+        accidentals = {'#' => 'is', 'b' => 'es', '##' => 'isis', 'bb' => 'eses'}
+        lengths = {1 => 4, 2 => 2, 4 => 1 }
+        @lines.each do |line|
+          line.measures.each do |measure|
+            measure.chords.each do |chord|
+              type = ":#{chord.type}" unless chord.type.empty?
+              accidental = accidentals[chord.root_accidental]
+              root = chord.root_letter.downcase
+              length = lengths[chord.length]
+              output_string << " #{root}#{accidental}#{length}#{type}"
+            end
+          end
+        end
+      end
+      output_string.strip
+    end
   end
 
   class Line
+    attr_accessor :measures
     def initialize(string)
       @measure_array = string.split('|')
       @measures = @measure_array.collect do |measure|
@@ -67,16 +109,19 @@ module Chartdown
     end
 
     def length
-      @measures.inject { |sum, measure| sum += measure.length }
+      sum = 0
+      @measures.each { |m| sum += m.length }
+      sum
     end
 
     def to_s
-      @measures.collect { |measure| measure.to_s }.join(' | ')
+      @measures.collect { |m| m.to_s }.join(' | ')
     end
   end
 
   class Measure
 
+    attr_accessor :chords
     def initialize(string)
       @chord_array = string.gsub(/\s+/m, ' ').strip.split(" ")
       case @chord_array.length
@@ -99,7 +144,9 @@ module Chartdown
     end
 
     def length
-      @chords.inject { |sum, chord| sum += chord.length }
+      sum = 0
+      @chords.each { |chord| sum += chord.length }
+      sum
     end
 
     def chord(n)
@@ -114,26 +161,21 @@ module Chartdown
 
   class Chord
 
+    attr_accessor :name, :length, :root_letter, :root_accidental, :type
     def initialize(chord_name, length)
 
       raise ArgumentError 'Chord name argument is not a string' unless chord_name.is_a? String
 
       @length = length
-      regex = /([A-Ga-g][b#]*)(.*)/
+      @name = chord_name
+
+      regex = /([A-Ga-g])([b#]{0,2})(.*)/
       match = regex.match(chord_name)
-      @root = match[1]
-      @type = match[2]
+      @root_letter = match[1]
+      @root_accidental = match[2]
+      @type = match[3]
     end
 
-    def Chord.root_from_chord_name(chord_name)
-      regex = /[ABCDEFG][b#]*/
-      chord_name[0]
-    end
-
-    def Chord.type_from_chord_name(chord_name)
-      raise ArgumentError 'Chord name argument is not a string' unless chord_name.is_a? String
-      chord_name[1..chord_name.length]
-    end
 
   end
 
