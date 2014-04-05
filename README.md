@@ -126,3 +126,14 @@ Fm Bb Eb - | Fm Bb Eb - |
 ```
 Fm | - Bb - Eb | - Ab - - 
 ```
+
+--------------------------------
+TODO
+=========
+
+* Repeat barlines
+* Extend chords with `-`
+* Validate input
+* Chord types
+* Time signatures
+* VexTab

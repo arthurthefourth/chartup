@@ -60,8 +60,13 @@ module Chartdown
       rendered
     end
 
-    def output_lilypond
-      o, s = Open3.capture2("lilypond --output=test -", :stdin_data => to_ly)
+    def output_lilypond(format)
+      case format
+      when :pdf
+        o, s = Open3.capture2("lilypond --output=test -", :stdin_data => to_ly)
+      when :png 
+        o, s = Open3.capture2("lilypond --output=test -dbackend=eps -dno-gs-load-fonts -dinclude-eps-fonts --png -", :stdin_data => to_ly)
+      end
     end
 
     def to_vex
