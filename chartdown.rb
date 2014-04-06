@@ -14,14 +14,16 @@ module Chartdown
 
     c = Chartdown::Chart.new(d)
   end
+
   class Chart
     attr_accessor :lines, :title, :composer
+
     def initialize(string)
 
       raise ArgumentError 'Chart string is not a string' unless string.is_a? String
       raise ArgumentError 'Chart string is empty' if string.empty?
 
-      @line_array = string.split("\n").collect { |line| line.strip }.reject { |line| line.empty? }
+      @line_array = string.split("\n").map { |line| line.strip }.reject { |line| line.empty? }
 
       # regex = /(title|composer):(.*)/
       # @line_arr
@@ -36,8 +38,9 @@ module Chartdown
         @line_array.shift
       end
 
-      @lines = @line_array.collect do |line|
-        Line.new(line)
+      @lines = Array.new
+      @line_array.each_with_index do |line, idx|
+        @lines << Line.new(line, idx, self)
       end
     end
 
@@ -45,15 +48,22 @@ module Chartdown
       @lines[n]
     end
 
+    def first_line
+      @lines[0]
+    end
+
+    def last_line
+      @lines[-1]
+    end
+
     def to_s
-      @lines.collect { |line| line.to_s }.join("\n") 
+      @lines.map { |line| line.to_s }.join("\n") 
     end
 
     def to_ly
       # Figure out how long each chord is, and how long each line is
       # For each line, create enough beats and a break
       template = File.read('./chartdown.ly.erb')
-      puts template
       renderer = ERB.new(template)
       rendered = renderer.result(binding)
       File.open('./test.ly', 'w') { |file| file.write(rendered) }
@@ -83,7 +93,7 @@ module Chartdown
       case format
       when :lilypond
         accidentals = {'#' => 'is', 'b' => 'es', '##' => 'isis', 'bb' => 'eses'}
-        lengths = {1 => 4, 2 => 2, 4 => 1 }
+        lengths = {1 => 4, 2 => 2, 3 => '2.', 4 => 1 }
         @lines.each do |line|
           line.measures.each do |measure|
             measure.chords.each do |chord|
@@ -102,15 +112,39 @@ module Chartdown
 
   class Line
     attr_accessor :measures
-    def initialize(string)
+
+    def initialize(string, idx, chart)
+      @idx = idx
+      @chart = chart
       @measure_array = string.split('|')
-      @measures = @measure_array.collect do |measure|
-        Measure.new(measure)
+      @measures = Array.new
+      @measure_array.each_with_index do |measure, idx|
+        @measures << Measure.new(measure, idx, self)
       end
     end
 
     def measure(n)
       @measures[n]
+    end
+
+    def bar(n)
+      measure(n)
+    end
+
+    def last_measure
+      @measures[-1]
+    end
+
+    def first_measure
+      @measures[0]
+    end
+
+    def prev
+      @chart.line(@idx - 1)
+    end
+
+    def next
+      @chart.line(@idx + 1)
     end
 
     def length
@@ -120,32 +154,42 @@ module Chartdown
     end
 
     def to_s
-      @measures.collect { |m| m.to_s }.join(' | ')
+      @measures.map { |m| m.to_s }.join(' | ')
     end
   end
 
   class Measure
-
     attr_accessor :chords
-    def initialize(string)
-      @chord_array = string.gsub(/\s+/m, ' ').strip.split(" ")
-      case @chord_array.length
-      when 1
-        @chords = [ Chord.new(@chord_array[0], 4) ]
-      when 2
-        @chords = @chord_array.collect do |chord|
-          Chord.new(chord, 2)
-        end
-      when 4
-        @chords = @chord_array.collect do |chord|
-          Chord.new(chord, 1)
-        end
-      else
-        # Each dash augments the value of the previous chord
-        # Start at the last element and move left
-        # When you hit a chord, add it in as the beginning of the array - @chords.insert(0, Chord.new(chord, length))
 
+    def initialize(string, idx, line)
+      @idx = idx
+      @line = line
+      @chord_array = string.gsub(/\s+/m, ' ').strip.split(" ")
+      @chord_array = fill_out_chord_array(@chord_array)
+
+      @chords = Array.new()
+      @chord_array.each do |chord|
+        if chord == '-'
+          @current_chord ||= prev.last_chord
+          @current_chord.length += 1
+        else
+          @current_chord = Chord.new(chord, 1)
+          @chords << @current_chord
+        end                
       end
+    end
+
+    def fill_out_chord_array(chord_array)
+      case chord_array.length
+      when 1
+        chord = chord_array[0]
+        chord_array = [chord, '-', '-', '-']
+      when 2
+        chord_array = [chord_array[0], '-', chord_array[1], '-']
+      when 3
+        chord_array << '-'
+      end
+      chord_array
     end
 
     def length
@@ -156,6 +200,30 @@ module Chartdown
 
     def chord(n)
       @chords[n]
+    end
+
+    def first_chord
+      @chords[0]
+    end
+
+    def last_chord
+      @chords[-1]
+    end
+
+    def prev
+      if @idx == 0
+        @line.prev.last_measure
+      else
+        @line.measure(@idx - 1)
+      end
+    end
+
+    def next
+      if self == @line.last_measure
+        @line.next.first_measure
+      else
+        @line.measure(@idx + 1)
+      end
     end
 
     def to_s
