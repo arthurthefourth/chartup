@@ -36,7 +36,7 @@ comp = #(define-music-function (parser location count) (integer?)
 	\relative c'' {
 	  \override Score.RehearsalMark.self-alignment-X = #LEFT
     <% lines.each do |line| %>
-    <% unless line.title.empty? %>
+    <% unless line.title.nil? || line.title.empty? %>
       \mark \markup{ \right-align \box "<%= line.title %>" }
     <% end %>
 	  \comp #<%= line.length %> \break

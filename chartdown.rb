@@ -40,7 +40,6 @@ module Chartdown
       @lines = Array.new
       # Section titles belong to specific lines
       # If we find a line above a -----, we make it the title of the line below that
-      # How do we prevent the title lines from going in?
       @line_array.each_with_index do |line, idx|
         if is_underline(@line_array[idx + 1])
           @line_title = line
