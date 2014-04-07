@@ -132,8 +132,10 @@ TODO
 =========
 
 * Repeat barlines
-* Extend chords with `-`
+~~* Section titles~~
+~~* Extend chords with `-`~~
 * Validate input
+* Slash notation (e.g. A/G)
 * Chord types
 * Time signatures
 * VexTab

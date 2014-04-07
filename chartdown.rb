@@ -26,7 +26,6 @@ module Chartdown
       @line_array = string.split("\n").map { |line| line.strip }.reject { |line| line.empty? }
 
       # regex = /(title|composer):(.*)/
-      # @line_arr
 
       if @line_array[0].downcase.start_with? 'title:'
         @title = @line_array[0].split('title:')[1].strip
@@ -39,9 +38,23 @@ module Chartdown
       end
 
       @lines = Array.new
+      # Section titles belong to specific lines
+      # If we find a line above a -----, we make it the title of the line below that
+      # How do we prevent the title lines from going in?
       @line_array.each_with_index do |line, idx|
-        @lines << Line.new(line, idx, self)
+        if is_underline(@line_array[idx + 1])
+          @line_title = line
+          @line_array.delete_at(idx + 1)
+        else
+          @lines << Line.new(line, idx, self, @line_title)
+          @line_title = ''
+        end
       end
+    end
+
+    def is_underline(line)
+      false if line.nil?
+      line =~ /\A-+\z/ # Line has only - characters
     end
 
     def line(n)
@@ -61,8 +74,6 @@ module Chartdown
     end
 
     def to_ly
-      # Figure out how long each chord is, and how long each line is
-      # For each line, create enough beats and a break
       template = File.read('./chartdown.ly.erb')
       renderer = ERB.new(template)
       rendered = renderer.result(binding)
@@ -111,12 +122,13 @@ module Chartdown
   end
 
   class Line
-    attr_accessor :measures
+    attr_accessor :measures, :title
 
-    def initialize(string, idx, chart)
+    def initialize(string, idx, chart, title)
+      @title = title
       @idx = idx
       @chart = chart
-      @measure_array = string.split('|')
+      @measure_array = string.split('|').map { |measure| measure.strip }.reject { |measure| measure.empty? }
       @measures = Array.new
       @measure_array.each_with_index do |measure, idx|
         @measures << Measure.new(measure, idx, self)
@@ -148,9 +160,8 @@ module Chartdown
     end
 
     def length
-      sum = 0
-      @measures.each { |m| sum += m.length }
-      sum
+      # Adjust later for different time signatures
+      4 * @measures.length
     end
 
     def to_s
@@ -159,12 +170,26 @@ module Chartdown
   end
 
   class Measure
-    attr_accessor :chords
+    attr_accessor :chords, :starts_with_repeat, :ends_with_repeat
 
     def initialize(string, idx, line)
       @idx = idx
       @line = line
+      @starts_with_repeat = false
+      @ends_with_repeat = false
+
       @chord_array = string.gsub(/\s+/m, ' ').strip.split(" ")
+
+      if @chord_array[0] == ':'
+        @starts_with_repeat = true
+        @chord_array.shift
+      end
+
+      if @chord_array[-1] == ':'
+        @ends_with_repeat = true
+        @chord_array.pop
+      end
+
       @chord_array = fill_out_chord_array(@chord_array)
 
       @chords = Array.new()
@@ -230,6 +255,7 @@ module Chartdown
       # This will need fixing
       @chord_array.join(" ")
     end
+
   end
 
   class Chord

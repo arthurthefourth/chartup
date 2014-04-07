@@ -35,8 +35,10 @@ comp = #(define-music-function (parser location count) (integer?)
 \new Staff {
 	\relative c'' {
 	  \override Score.RehearsalMark.self-alignment-X = #LEFT
-	  % \mark \markup{ \right-align \box "CHORUS" }
-    <% lines.each do |line| %> 
+    <% lines.each do |line| %>
+    <% unless line.title.empty? %>
+      \mark \markup{ \right-align \box "<%= line.title %>" }
+    <% end %>
 	  \comp #<%= line.length %> \break
     <% end %> 
 	}
