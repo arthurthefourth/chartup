@@ -132,8 +132,8 @@ TODO
 =========
 
 * Repeat barlines
-~~* Section titles~~
-~~* Extend chords with `-`~~
+* ~~Section titles~~
+* ~~Extend chords with `-`~~
 * Validate input
 * Slash notation (e.g. A/G)
 * Chord types
