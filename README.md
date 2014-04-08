@@ -1,9 +1,12 @@
-Chartdown
-============
+# Chartup
 
-Chartdown is a language for writing simple music charts, inspired by [Markdown](http://daringfireball.net/projects/markdown/syntax). Like Markdown documents, Chartdown files can be used as charts on their own, but they look better when translated onto a musical staff. Chartdown does not plan to support the notation of actual notes; there are [plenty](http://lilypond.org) of [great](http://abcplus.sourceforge.net/) [options](http://icking-music-archive.org/software/htdocs/index.html) for that already. 
+Chartup is a simple intuitive language for writing basic chord charts, inspired by [Markdown][1]. It's designed for musicians who want to be able to write out a quick chord chart in real-time, without having to learn a new application or technology.
 
-The chartdown tool converts Chartdown files into Lilypond (.ly) documents, which can then be exported as PDF's, PNG's, or MusicXML.
+Chartup does not plan to support the notation of actual notes; there are [plenty][2] of [great][3] [options][4] for that already. 
+
+The Chartup library currently requires Lilypond to run. It converts .chartup files into Lilypond (.ly) documents, and uses Lilypond to render these as PDF and PNG.
+
+MusicXML support is forthcoming, allowing you to import charts into Finale, Sibelius, or your favorite notation program, for further editing.
 
 If you'd like to get started quickly, here's an example document:
 
@@ -12,40 +15,56 @@ Example
 
 ```
 title: The Song
-composer: Arthur Lewis
-tempo: 120
-[ V C V B V C ]
+composer: You!
 
 VERSE
 -------------
 A | A | A | A
 D | D | D | E
-F | Fm | Gm7b5 - C7 - |
+F | Fm | Gm7-5 - C7 - |
 
 CHORUS
 --------------
-||: Fm - - C#7 | A6 /G /F# /E | D5 D7#5 D6 D13 |
-    G          | Gm7 C7       | E7 - A7 - :||
+Fm - - C#7 | A6 /G /F# /E | D5 D7#5 D6 D13 |
+    G          | Gm7 C7       | E7 - A7 -  |
 
 BRIDGE
 --------------
 F | Bb | Gm | A7 | D | D
 ```
 
+Quick Guide:
+--------------
+Start with -
 
-A Chartdown document has the extension .chartdown, and it has two main parts.
+```
+title: Your Title
+composer: Composer NAme
+``` 
 
-* Metadata
+Then just write out the chords, using `|` to make a new measure, and going to the next line when you want to.
+
+#####Tips: 
+* Spacing is irrelevant.
+* Chord shorthand: Use `-` to extend a chord for multiple beats. Leaving only one or two chords in a bar will make them whole notes or half notes, respectively. 
+* Rehearsal Marks: Put `------` under a letter, word, or phrase to mark the section below it.  
+
+
+Details:
+----------
+
+A Chartup document has the extension .chartup, and it has two main parts.
+
+### Metadata
 
 ```
 title: A chart
 composer: This guy
-tempo: 127
 ```
 
-* Chart
+### Chart
 
-Charts can have multiple sections, each with its own title.
+Charts can have multiple sections, each with its own title (which appears as a rehearsal mark).
 
 ```
 Chorus
@@ -55,13 +74,10 @@ Chorus
 
 Verse
 --------------
-||: Eb | Ab | Eb | Bb :|| 
+| Eb | Ab | Eb | Bb | 
 ```
 
-Lines within each section are written mostly as you'd expect.
-
-Measures
---------
+###Measures
 
 Measures are delineated by `|` characters. The first and final `|` characters in a line are both optional. Spacing is irrelevant.
 
@@ -72,7 +88,7 @@ G | C
 C         | G         |
 ```
 
-Chord Types
+###Chord Types
 ---------
 
 Most common chord nomenclature is accepted.
@@ -138,4 +154,9 @@ TODO
 * Slash notation (e.g. A/G)
 * Chord types
 * Time signatures
-* VexTab
+* MusicXML support
+
+[1]: http://daringfireball.net/projects/markdown/syntax "Markdown Syntax at Daring Fireball"
+[2]: http://lilypond.org
+[3]: http://abcplus.sourceforge.net/
+[4]: http://icking-music-archive.org/software/htdocs/index.html
