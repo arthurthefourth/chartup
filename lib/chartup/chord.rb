@@ -15,6 +15,10 @@ module Chartup
       @root_accidental = match[2]
       @type = match[3]
     end
+
+    def to_s
+      @name
+    end
     def root
       "#{@root_letter}#{@root_accidental}"
     end
@@ -23,8 +27,11 @@ module Chartup
       case format
       when :lilypond
         accidentals = {'#' => 'is', 'b' => 'es', '##' => 'isis', 'bb' => 'eses'}
-        lengths = {1 => 4, 2 => 2, 3 => '2.', 4 => 1 }
-        chord_names = {'M7' => 'maj7', 'sus' => 'sus4', 'M9' => 'maj9', 'ø' => 'm7.5-', 'mM7' => 'm7+'}
+        lengths = {1 => 4, 2 => 2, 3 => '2.', 4 => 1, 
+          5 => [1, 4], 6 => '1.', 7=> '1..', 8 => '\breve', 
+          9 => ['\breve', 4], 10 => ['\breve', 2], 11 => ['\breve', '2.'], 12 => '\breve.' }
+        # Major 7th chords will need special handling
+        chord_names = {'M7' => 'maj7', 'sus' => 'sus4', 'M9' => 'maj9', 'ø' => 'm7.5-', 'mM7' => 'm7+', 'M7#11' => 'maj7.11+', "º" => "dim"}
 
         accidental = accidentals[root_accidental]
         root = @root_letter.downcase
@@ -37,8 +44,12 @@ module Chartup
           symbol = $1 == '#' ? '+' : '-'
           ".#{$2}#{symbol}"
         end
-
-        " #{root}#{accidental}#{length}:#{type}"
+        if length.is_a?(Array)
+          length.map {|l| " #{root}#{accidental}#{l}:#{type}"}.join('')
+        else
+          " #{root}#{accidental}#{length}:#{type}"
+            
+        end
       end
     end
   end

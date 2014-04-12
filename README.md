@@ -4,14 +4,11 @@ Chartup is a simple intuitive language for writing basic chord charts, inspired 
 
 Chartup does not plan to support the notation of actual notes; there are [plenty][2] of [great][3] [options][4] for that already. 
 
-The Chartup library currently requires Lilypond to run. It converts .chartup files into Lilypond (.ly) documents, and uses Lilypond to render these as PDF and PNG.
+The Chartup library currently converts .chartup files into Lilypond (.ly) documents. Lilypond can be used to render these to .png or. pdf documents.
 
 MusicXML support is forthcoming, allowing you to import charts into Finale, Sibelius, or your favorite notation program, for further editing.
 
-If you'd like to get started quickly, here's an example document:
-
-Example
---------
+If you'd like to get started quickly, here's a sample document:
 
 ```
 title: The Song
@@ -21,11 +18,11 @@ VERSE
 -------------
 A | A | A | A
 D | D | D | E
-F | Fm | Gm7-5 - C7 - |
+F | Fm | Gm7b5 - C7 - |
 
 CHORUS
 --------------
-Fm - - C#7 | A6 /G /F# /E | D5 D7#5 D6 D13 |
+Fm - - C#7 | A6 Dm7 F#m9 E5 | D5 D7#5 D6 D13 |
     G          | Gm7 C7       | E7 - A7 -  |
 
 BRIDGE
@@ -33,6 +30,7 @@ BRIDGE
 F | Bb | Gm | A7 | D | D
 ```
 
+---------------
 Quick Guide:
 --------------
 Start with -
@@ -49,6 +47,7 @@ Then just write out the chords, using `|` to make a new measure, and going to th
 * Chord shorthand: Use `-` to extend a chord for multiple beats. Leaving only one or two chords in a bar will make them whole notes or half notes, respectively. 
 * Rehearsal Marks: Put `------` under a letter, word, or phrase to mark the section below it.  
 
+------------------------
 
 Details:
 ----------
@@ -91,16 +90,16 @@ C         | G         |
 ###Chord Types
 ---------
 
-Most common chord nomenclature is accepted.
+Most common chord nomenclature is accepted. Some chords stil produce unexpected results in conversion to Lilypond, most notably, M7#11 and 13 chords. Slash chords are not yet supported, but will be soon.
 
 ```
-G7b5 | AbM7 | G#7#5 | Eº | Aaug
+G7b5 | AbM7 | G#7#5 | Edim | Aaug
 ```
 
 Rhythm
 ----------
 
-Each measure is divided into quarter notes. Chord lengths can be implicit or explicit.
+Each measure is divided into quarter notes. Chord lengths can be implicit or explicit. 
 
 *Implicit*
 
@@ -152,7 +151,7 @@ TODO
 * ~~Extend chords with `-`~~
 * Validate input
 * Slash notation (e.g. A/G)
-* Chord types
+* ~~Chord types~~
 * Time signatures
 * MusicXML support
 

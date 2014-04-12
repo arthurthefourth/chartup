@@ -68,24 +68,6 @@ module Chartup
       rendered
     end
 
-    def output_lilypond(format)
-      case format
-      when :pdf
-        o, s = Open3.capture2("lilypond --output=test -", :stdin_data => to_ly)
-      when :png 
-        o, s = Open3.capture2("lilypond --output=test -dbackend=eps -dno-gs-load-fonts -dinclude-eps-fonts --png -", :stdin_data => to_ly)
-      end
-    end
-
-    def to_vex
-    end
-
-    def to_music_xml
-    end
-
-    def to_abc
-    end
-
     def all_chords(format)
       output_string = ''
       case format

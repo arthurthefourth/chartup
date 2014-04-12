@@ -25,7 +25,7 @@ module Chartup
       @chords = Array.new()
       @chord_array.each do |chord|
         if chord == '-'
-          @current_chord ||= prev.last_chord
+          @current_chord ||= prev_chord
           @current_chord.length += 1
         else
           @current_chord = Chord.new(chord, 1)
@@ -36,9 +36,10 @@ module Chartup
 
     def fill_out_chord_array(chord_array)
       case chord_array.length
+      when 0
+        chord_array = ['-', '-', '-', '-']
       when 1
-        chord = chord_array[0]
-        chord_array = [chord, '-', '-', '-']
+        chord_array = [chord_array[0], '-', '-', '-']
       when 2
         chord_array = [chord_array[0], '-', chord_array[1], '-']
       when 3
@@ -63,6 +64,12 @@ module Chartup
 
     def last_chord
       @chords[-1]
+    end
+
+    def prev_chord
+      measure = prev
+      measure = measure.prev while measure.chords.empty?
+      measure.last_chord
     end
 
     def prev

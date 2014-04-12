@@ -1,12 +1,12 @@
 module Chartup
   class Line
-    attr_accessor :measures, :title
+    attr_accessor :measures, :title, :measure_array
 
     def initialize(string, idx, chart, title)
       @title = title
       @idx = idx
       @chart = chart
-      @measure_array = string.split('|').map { |measure| measure.strip }.reject { |measure| measure.empty? }
+      @measure_array = string.split('|').map { |measure| measure.strip }
       @measures = Array.new
       @measure_array.each_with_index do |measure, idx|
         @measures << Measure.new(measure, idx, self)
