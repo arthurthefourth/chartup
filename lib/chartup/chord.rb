@@ -35,7 +35,7 @@ module Chartup
 
         accidental = accidentals[root_accidental]
         root = @root_letter.downcase
-        length = lengths[@length]        
+        lp_length = lengths[@length]        
         type = chord_names[@type] || @type
 
         # Turn chords like G7b9#13 into chords like G7.9-13+
@@ -44,10 +44,24 @@ module Chartup
           symbol = $1 == '#' ? '+' : '-'
           ".#{$2}#{symbol}"
         end
-        if length.is_a?(Array)
-          length.map {|l| " #{root}#{accidental}#{l}:#{type}"}.join('')
+
+        # For notes longer than 8, add in breves before the chord.
+        if @length > 8
+          breves = @length / 8
+          final_length = @length % 8
+          if final_length == 0
+            lp_length = []
+          else
+            lp_length = [ lengths[final_length] ]
+          end
+          breves.times { lp_length.unshift(lengths[8])}
+        end
+        if lp_length.is_a?(Array)
+
+
+          lp_length.map {|l| " #{root}#{accidental}#{l}:#{type}"}.join('')
         else
-          " #{root}#{accidental}#{length}:#{type}"
+          " #{root}#{accidental}#{lp_length}:#{type}"
             
         end
       end
