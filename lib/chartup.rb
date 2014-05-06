@@ -28,4 +28,7 @@ F | Bb | Gm | A7 | Dm | D7b9b13
 
     c = Chartup::Chart.new(d)
   end
+
+  class Error < StandardError; end
+  class SyntaxError < Error; end
 end

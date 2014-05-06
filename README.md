@@ -153,6 +153,7 @@ TODO
 * Slash notation (e.g. A/G)
 * ~~Chord types~~
 * Time signatures
+* Key signatures
 * MusicXML support
 
 [1]: http://daringfireball.net/projects/markdown/syntax "Markdown Syntax at Daring Fireball"
