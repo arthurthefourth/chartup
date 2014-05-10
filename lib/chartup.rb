@@ -29,6 +29,20 @@ F | Bb | Gm | A7 | Dm | D7b9b13
     c = Chartup::Chart.new(d)
   end
 
+  def Chartup.new_chart(chartup)
+    Chartup::Chart.new(chartup)
+  end
+
+  def Chartup.validate_syntax(chartup)
+    c = Chartup::Chart.new(chartup)
+  rescue Chartup::Error => error
+    raise
+  end
+
+  def Chartup.to_ly(chartup)
+    Chartup::Chart.new(chartup).to_ly
+  end
+
   class Error < StandardError; end
   class SyntaxError < Error; end
 end
