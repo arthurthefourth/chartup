@@ -37,13 +37,13 @@ class ChartTest < MiniTest::Test
     bad_examples.each { |string| refute Chartup::Chart.is_underline?(string) }
   end
 
-  def test_Lines_of_music_are_added_to_the_chart_individually
-    array = ["D G C F", "Gm Cm Fm Bbm", "A7 D7 G7 C7"]
+  def test_lines_of_music_become_Line_objects
+    array = ["VERSE", "------", "D G C F", "Gm Cm Fm Bbm", "CHORUS", "", "-----", "A7 D7 G7 C7"]
     c = array.join("\n")
     chart = Chartup::Chart.new(c)
-    assert_equal array[0], chart.line(0).to_s
-    assert_equal array[1], chart.line(1).to_s
-    assert_equal array[2], chart.line(2).to_s
+    assert_equal array[2], chart.line(0).to_s
+    assert_equal array[3], chart.line(1).to_s
+    assert_equal array[7], chart.line(2).to_s
   end
 
 end
