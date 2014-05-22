@@ -12,21 +12,24 @@ module Chartup
       raise Chartup::ArgumentError.new('Chart string is empty') if string.empty?
 
       @line_array = string.split("\n").map { |line| line.strip }.reject { |line| line.empty? }
-
       @line_array = set_chart_headers(@line_array)
 
       @lines = Array.new
-
+      @line_num = 0
       @line_array.each_with_index do |line, idx|
+
         # Assign section titles to the lines directly below them
         if self.class.is_underline?(@line_array[idx + 1])
           @line_title = line
-          @line_array.delete_at(idx + 1)
+          @line_array.delete_at(idx + 1) 
+
         # Create Lines for every other line
         else
-          @lines << Line.new(line, idx, self, @line_title)
+          @lines << Line.new(line, @line_num, self, @line_title)
+          @line_num += 1
           @line_title = ''
         end
+
       end
     end
 
