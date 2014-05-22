@@ -45,4 +45,5 @@ F | Bb | Gm | A7 | Dm | D7b9b13
 
   class Error < StandardError; end
   class SyntaxError < Error; end
+  class ArgumentError < Error; end
 end
