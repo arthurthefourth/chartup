@@ -15,6 +15,9 @@ class ChartTest < MiniTest::Test
     chart = Chartup::Chart.new("title: #{t}\ncomposer: #{c}")
     assert_equal t, chart.title
     assert_equal c, chart.composer
+    capital_chart = Chartup::Chart.new("Title: #{t}\nComposer: #{c}")
+    assert_equal t, capital_chart.title
+    assert_equal c, capital_chart.composer
   end
 
   def test_Section_titles_are_attached_to_the_lines_below_them

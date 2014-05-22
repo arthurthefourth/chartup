@@ -39,7 +39,8 @@ module Chartup
       headers_in_order.each do |header|
 
         if line_array[0].downcase.start_with? "#{header}:"
-          send "#{header}=", line_array[0].split("#{header}:")[1].strip
+          # Set header instance variable to appropriate content
+          send "#{header}=", line_array[0].split(/#{Regexp.quote(header)}:/i)[1].strip 
           line_array.shift
         end
 
