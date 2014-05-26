@@ -3,9 +3,8 @@ require 'chartup'
 
 class ChartTest < MiniTest::Test
 
-  def test_Chart_must_be_initalized_with_non_empty_string
+  def test_Chart_must_be_initialized_with_string
     assert_raises(Chartup::ArgumentError) { Chartup::Chart.new(5) }
-    assert_raises(Chartup::ArgumentError) { Chartup::Chart.new('') }
   end
 
 

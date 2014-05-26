@@ -9,12 +9,14 @@ module Chartup
     def initialize(string)
 
       raise Chartup::ArgumentError.new('Chart string is not a string') unless string.is_a? String
-      raise Chartup::ArgumentError.new('Chart string is empty') if string.empty?
+      #raise Chartup::ArgumentError.new('Chart string is empty') if string.empty?
 
+      @lines = Array.new
+      return if string.empty?
+      
       @line_array = string.split("\n").map { |line| line.strip }.reject { |line| line.empty? }
       @line_array = set_chart_headers(@line_array)
 
-      @lines = Array.new
       @line_num = 0
       @line_array.each_with_index do |line, idx|
 
