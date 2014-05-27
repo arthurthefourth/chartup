@@ -1,20 +1,20 @@
 module Chartup
   class Line
-    attr_accessor :measures, :title, :measure_array
+    attr_accessor :measures, :title, :index, :measure_array
 
     # Creates a new Line object. 
     # @param string [String] the string of measures to be parsed into the Line.
-    # @param idx [Fixnum] the index of the line within its parent chart (needed for {#next} and {#prev})
+    # @param index [Fixnum] the index of the line within its parent chart (needed for {#next} and {#prev})
     # @param chart [Chart] the parent Chart
     # @param title [String] the title of this line, if any.
-    def initialize(string, idx, chart, title)
+    def initialize(string, index, chart, title)
       @title = title
-      @idx = idx
+      @index = index
       @chart = chart
-      @measure_array = string.split('|').map { |measure| measure.strip }
+      @measure_array = string.split('|').map { |measure| measure.strip }.reject {|measure| measure.empty? }
       @measures = Array.new
-      @measure_array.each_with_index do |measure, idx|
-        @measures << Measure.new(measure, idx, self)
+      @measure_array.each_with_index do |measure, index|
+        @measures << Measure.new(measure, index, self)
       end
     end
 
@@ -42,12 +42,12 @@ module Chartup
 
     # @return [Line] the Line before this one in its parent Chart
     def prev
-      @chart.line(@idx - 1)
+      @chart.line(@index - 1)
     end
 
     # @return [Line] the Line after this one in its parent Chart
     def next
-      @chart.line(@idx + 1)
+      @chart.line(@index + 1)
     end
 
     # @return [Fixnum] the number of beats this Line takes up.
