@@ -8,6 +8,8 @@ The Chartup library currently converts .chartup files into [Lilypond][4] (.ly) d
 
 MusicXML support is forthcoming, allowing you to import charts into Finale, Sibelius, or your favorite notation program, for further editing.
 
+Please note that Chartup is still under development, and is lacking a number of important features.
+
 # Usage
 
 To try it out, visit the [Chartup][chartup] site. Or to use the library, you'll need to have lilypond installed:
