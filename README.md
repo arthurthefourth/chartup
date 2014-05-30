@@ -149,7 +149,7 @@ TODO
 * Repeat barlines
 * ~~Section titles~~
 * ~~Extend chords with `-`~~
-* Validate input
+* ~~Validate input~~
 * Slash notation (e.g. A/G)
 * ~~Chord types~~
 * Time signatures
