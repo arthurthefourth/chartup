@@ -1,68 +1,83 @@
 module Chartup
   class Measure
-    attr_accessor :chords, :starts_with_repeat, :ends_with_repeat
+    attr_accessor :chords, :starts_with_repeat, :ends_with_repeat, :index, :line
 
     # Builds a new Measure.
     # @param string [String] the string of chords to be parsed.
-    # @param idx [Fixnum] the index of this Measure in its parent Line.
+    # @param index [Fixnum] the index of this Measure in its parent Line.
     # @param line [Line] the parent line.
-    def initialize(string, idx, line)
-      @idx = idx
+    def initialize(string, index=nil, line=nil)
+      @index = index
       @line = line
       @starts_with_repeat = false
       @ends_with_repeat = false
 
-      @chord_array = string.gsub(/\s+/m, ' ').strip.split(" ")
+      # Clean up whitespace
+      @chord_strings = string.gsub(/\s+/m, ' ').strip.split(" ")
+      scan_for_repeats
+      @chord_strings = self.class.fill_out_chord_strings(@chord_strings)
+      @chords = build_chords_from_chord_strings
 
-      # Process repeat barlines
-      if @chord_array[0] == ':'
+    end
+
+    def scan_for_repeats
+      if @chord_strings[0] == ':'
         @starts_with_repeat = true
-        @chord_array.shift
+        @chord_strings.shift
       end
 
-      if @chord_array[-1] == ':'
+      if @chord_strings[-1] == ':'
         @ends_with_repeat = true
-        @chord_array.pop
-      end
-
-      @chord_array = fill_out_chord_array(@chord_array)
-
-      # Each hyphen augments the length of the previous chord by a beat
-      @chords = Array.new()
-      @chord_array.each do |chord|
-        if chord == '-'
-          @current_chord ||= prev_chord
-          @current_chord.length += 1
-        else
-          @current_chord = Chord.new(chord, 1)
-          @chords << @current_chord
-        end                
+        @chord_strings.pop
       end
     end
 
+    # This has to stay an instance method because it depends on the chords in previous measures.
+    # At this point, every chord string should be either a 1-beat chord, or a hyphen.
+    # For each chord, load it into chords, and set the current chord pointer.
+    #
+    # For each hyphen, add a beat to the current chord. If there is no current chord,
+    # add it to the last chord before this measure.
+    def build_chords_from_chord_strings
+      chords = Array.new()
+      current_chord = nil
+      @chord_strings.each do |chord_string|
+        # Each hyphen augments the length of the previous chord by a beat
+        if chord_string == '-'
+          current_chord ||= chord_before
+          current_chord.length += 1
+        else
+          current_chord = Chord.new(chord_string, 1)
+          chords << current_chord
+        end                
+      end
+      chords
+    end
+
     # Fills out an array of chords (as strings) with explicit hyphens for each beat.
-    # @param chord_array [Array] the array of chords (as strings). e.g. ['Gm7', 'C7']
+    # @param chord_strings [Array] the array of chords (as strings). e.g. ['Gm7', 'C7']
     # @return [Array] the filled-out array of chords (as strings). e.g. ['Gm7', '-', 'C7', '-']
-    def fill_out_chord_array(chord_array)
-      length = chord_array.length
+    def self.fill_out_chord_strings(chord_strings)
+      length = chord_strings.length
       case length
       when 0
-        chord_array = ['-', '-', '-', '-']
+        chord_strings = ['-', '-', '-', '-']
       when 1
-        chord_array = [chord_array[0], '-', '-', '-']
+        chord_strings = [chord_strings[0], '-', '-', '-']
       when 2
-        chord_array = [chord_array[0], '-', chord_array[1], '-']
+        chord_strings = [chord_strings[0], '-', chord_strings[1], '-']
       when 3
-        chord_array << '-'
+        chord_strings << '-'
       end
       if length > 4
-        raise Chartup::SyntaxError, "Too many chords in this measure: #{chord_array.join(' ')}" 
+        raise Chartup::SyntaxError, "Too many chords in this measure: #{chord_strings.join(' ')}" 
       end
-      chord_array
+      chord_strings
     end
 
     # @return [Fixnum] the number of beats this Measure takes up.
     def length
+      #TODO: Use inject for this
       sum = 0
       @chords.each { |chord| sum += chord.length }
       sum
@@ -86,7 +101,7 @@ module Chartup
     end
 
     # @return the last Chord *before* this measure.
-    def prev_chord
+    def chord_before
       measure = prev
       # Sometimes the previous measure has no explicit chords, only hyphens.
       measure = measure.prev while measure.chords.empty?
@@ -95,10 +110,10 @@ module Chartup
 
     # @return the Measure before this one.
     def prev
-      if @idx == 0
+      if @index == 0
         @line.prev.last_measure
       else
-        @line.measure(@idx - 1)
+        @line.measure(@index - 1)
       end
     end
 
@@ -107,7 +122,7 @@ module Chartup
       if self == @line.last_measure
         @line.next.first_measure
       else
-        @line.measure(@idx + 1)
+        @line.measure(@index + 1)
       end
     end
 
@@ -115,7 +130,7 @@ module Chartup
     # @return [String] the string.
     # @todo Include repeat barlines.
     def to_s
-      @chord_array.join(" ")
+      @chord_strings.join(" ")
     end
   end
 end

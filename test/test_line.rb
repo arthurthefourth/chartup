@@ -45,4 +45,62 @@ class LineTest < MiniTest::Test
     assert_equal 'Am - Dm -', l3.first_measure.to_s
   end
 
+  def test_prev
+    s = %Q{
+      title: Title
+      composer: Composer
+
+      VERSE
+      --------
+      Am D7 | E7 Gm
+      Bm Dm Cm Fm | Em
+
+      CHORUS
+      --------- 
+      Gm Am | D D D G | D G 
+    }
+    c = Chartup::Chart.new(s)
+    l1 = c.line(0)
+    l2 = c.line(1)
+    l3 = c.line(2)
+    assert_nil l1.prev
+    assert_equal l1, l2.prev
+    assert_equal l2, l3.prev
+  end
+
+  def test_next
+    s = %Q{
+      title: Title
+      composer: Composer
+
+      VERSE
+      --------
+      Am D7 | E7 Gm
+      Bm Dm Cm Fm | Em
+
+      CHORUS
+      --------- 
+      Gm Am | D D D G | D G 
+    }
+    c = Chartup::Chart.new(s)
+    l1 = c.line(0)
+    l2 = c.line(1)
+    l3 = c.line(2)
+    assert_equal l2, l1.next
+    assert_equal l3, l2.next
+    assert_nil l3.next
+  end
+
+  def test_length
+    l1 = Chartup::Line.new('Am Dm | Em Dm | |', nil, nil, nil)
+    assert_equal 12, l1.length
+
+    l2 = Chartup::Line.new('Am Dm | Em Dm', nil, nil, nil)
+    assert_equal 8, l2.length
+  end
+
+  def test_to_s
+    l1 = Chartup::Line.new('Am Dm | Em Dm | |', nil, nil, nil)
+    assert_equal 'Am - Dm - | Em - Dm - | - - - -', l1.to_s
+  end
 end

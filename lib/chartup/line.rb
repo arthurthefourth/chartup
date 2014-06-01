@@ -11,7 +11,8 @@ module Chartup
       @title = title
       @index = index
       @chart = chart
-      @measure_array = string.split('|').map { |measure| measure.strip }.reject {|measure| measure.empty? }
+      @measure_array = string.split('|').map { |measure| measure.strip }
+      @measure_array.shift if @measure_array.first.empty?
       @measures = Array.new
       @measure_array.each_with_index do |measure, index|
         @measures << Measure.new(measure, index, self)
@@ -42,6 +43,7 @@ module Chartup
 
     # @return [Line] the Line before this one in its parent Chart
     def prev
+      return nil if @index == 0 
       @chart.line(@index - 1)
     end
 
