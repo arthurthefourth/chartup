@@ -11,9 +11,12 @@ module Chartup
       @title = title
       @index = index
       @chart = chart
-      @measure_array = string.split('|').map { |measure| measure.strip }
+      @measures = []
+
+      @measure_array = string.split('|')
       @measure_array.shift if @measure_array.first.empty?
-      @measures = Array.new
+      @measure_array = @measure_array.map { |measure| measure.strip }
+      
       @measure_array.each_with_index do |measure, index|
         @measures << Measure.new(measure, index, self)
       end

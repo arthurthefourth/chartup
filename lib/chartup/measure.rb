@@ -59,6 +59,7 @@ module Chartup
     # @return [Array] the filled-out array of chords (as strings). e.g. ['Gm7', '-', 'C7', '-']
     def self.fill_out_chord_strings(chord_strings)
       length = chord_strings.length
+      chord_strings[0] = '-' if chord_strings[0] == ''
       case length
       when 0
         chord_strings = ['-', '-', '-', '-']

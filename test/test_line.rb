@@ -35,14 +35,20 @@ class LineTest < MiniTest::Test
   end
 
   def test_first_measure
-    l1 = Chartup::Line.new('Am', nil, nil, nil)
-    assert_equal 'Am - - -', l1.first_measure.to_s
+    c = Chartup::new_chart(%q{
+Am
+Am Dm | Gm Em
+|: Am Dm | Gm Em | D7 - G7 - :|
+ | Am Dm |
+| Dm Am | E
 
-    l2 = Chartup::Line.new('Am Dm | Gm Em', nil, nil, nil)
-    assert_equal 'Am - Dm -', l2.first_measure.to_s
+    })
 
-    l3 = Chartup::Line.new('|: Am Dm | Gm Em |: D7 - G7 - :|', nil, nil, nil)
-    assert_equal 'Am - Dm -', l3.first_measure.to_s
+    assert_equal 'Am - - -', c.line(0).first_measure.to_s
+    assert_equal 'Am - Dm -', c.line(1).first_measure.to_s
+    assert_equal 'Am - Dm -', c.line(2).first_measure.to_s
+    assert_equal '- - - -', c.line(3).first_measure.to_s
+    assert_equal 'Dm - Am -', c.line(4).first_measure.to_s
   end
 
   def test_prev

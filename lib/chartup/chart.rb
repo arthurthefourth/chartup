@@ -6,40 +6,45 @@ module Chartup
     # Populate Chart object with content of Chartup string
     # @param string [String] a string in Chartup format
     # @return [Chart] the newly-created Chart.
-    def initialize(string)
+    def initialize(string='')
 
       raise Chartup::ArgumentError.new('Chart string is not a string') unless string.is_a? String
       #raise Chartup::ArgumentError.new('Chart string is empty') if string.empty?
 
-      @lines = Array.new
+      @lines = []
+      @line_array = []
+      @line_num = 0
       return if string.empty?
       
-      @line_array = string.split("\n").map { |line| line.strip }.reject { |line| line.empty? }
+      @line_array = string.split("\n").reject { |line| line.strip.empty? }
       @line_array = set_chart_headers(@line_array)
 
-      @line_num = 0
       @line_array.each_with_index do |line, idx|
 
         # Assign section titles to the lines directly below them
         if self.class.is_underline?(@line_array[idx + 1])
-          @line_title = line
+          @line_title = line.strip
           @line_array.delete_at(idx + 1) 
 
         # Create Lines for every other line
         else
-          @lines << Line.new(line, @line_num, self, @line_title)
-          @line_num += 1
-          @line_title = ''
+          add_line(line, @line_title)
+          @line_title = nil
         end
 
       end
+    end
+
+    def add_line(string, title=nil)
+          @lines << Line.new(string, @line_num, self, title)
+          @line_num += 1
     end
 
     # Load initial headers into Chart object - title, composer, etc.
     def set_chart_headers(line_array)
       headers_in_order = ['title', 'composer'] 
       headers_in_order.each do |header|
-
+        line_array[0] = line_array[0].strip
         if line_array[0].downcase.start_with? "#{header}:"
           # Set header instance variable to appropriate content
           send "#{header}=", line_array[0].split(/#{Regexp.quote(header)}:/i)[1].strip 
@@ -54,7 +59,7 @@ module Chartup
     # @return [Boolean]
     def self.is_underline?(line)
       false if line.nil?
-      line =~ /\A[-_]+\z/ # Line has only - characters
+      line =~ /^(\s*)[-_]+(\s*)$/ # Line has only - characters
     end
 
     # Returns the nth line in this Chart.

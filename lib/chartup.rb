@@ -29,7 +29,7 @@ F | Bb | Gm | A7 | Dm | D7b9b13
     c = Chartup::Chart.new(d)
   end
 
-  def Chartup.new_chart(chartup)
+  def Chartup.new_chart(chartup='')
     Chartup::Chart.new(chartup)
   end
 

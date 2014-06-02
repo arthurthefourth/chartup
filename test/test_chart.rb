@@ -31,7 +31,7 @@ class ChartTest < MiniTest::Test
 
   def test_is_underline_tests_for_series_of_dashes_or_underscores
     good_examples = ["-", "------", "_", "______", "______-------_______"]
-    bad_examples = [" ------ ", " ", "|------|", "-- ", "- -"]
+    bad_examples = [" ", "|------|", "- -"]
     good_examples.each { |string| assert Chartup::Chart.is_underline?(string) }
     bad_examples.each { |string| refute Chartup::Chart.is_underline?(string) }
   end
