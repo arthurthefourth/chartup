@@ -45,4 +45,21 @@ class ChartTest < MiniTest::Test
     assert_equal array[7], chart.line(2).to_s
   end
 
+  def test_add_line
+    c = Chartup.new_chart
+    c.add_line('Am')
+    c.add_line('Am Dm | Gm Em')
+    c.add_line('|: Am Dm | Gm Em | D7 - G7 - :|')
+    c.add_line('  | Am Dm |')
+    c.add_line('| Dm Am | E')
+
+    chart_string = %q{Am - - -
+Am - Dm - | Gm - Em -
+Am - Dm - | Gm - Em - | D7 - G7 -
+- - - - | Am - Dm -
+Dm - Am - | E - - -}
+    assert_equal chart_string, c.to_s
+  end
+
+
 end
