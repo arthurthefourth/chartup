@@ -1,5 +1,9 @@
 # Chartup
 
+[![Code Climate](https://codeclimate.com/github/arthurthefourth/chartup.png)](https://codeclimate.com/github/arthurthefourth/chartup)
+[![Coverage](https://codeclimate.com/github/arthurthefourth/chartup/coverage.png)](https://codeclimate.com/github/arthurthefourth/chartup)
+[![Build Status](https://travis-ci.org/arthurthefourth/chartup.svg?branch=master)](https://travis-ci.org/arthurthefourth/chartup)
+
 Chartup is a simple intuitive language for writing basic chord charts, inspired by [Markdown][1]. It's designed for musicians who want to be able to write out a quick chord chart in real-time, without having to learn a new application or technology.
 
 Chartup does not plan to support the notation of actual notes; there are [plenty][2] of [options][3] for that already. 
