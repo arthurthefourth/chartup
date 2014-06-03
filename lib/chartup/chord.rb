@@ -26,7 +26,7 @@ module Chartup
     end
 
     def good_chord_type?(type)
-      types = ['', 'm', 'M', 'M7', 'm7', 'M9', 'm9', 'M6', 'm6', 'M11', 'm11', 'M13', 'm13', '5', '6', '7', '9', '11', '13', 'dim', 'aug', 'sus', 'sus4', 'mM7', 'ø', 'º', 'Maj7', 'min7']
+      types = ['', 'm', 'M', 'M7', 'm7', 'M9', 'm9', 'M6', 'm6', 'M11', 'm11', 'M13', 'm13', '5', '6', '7', '9', '11', '13', 'dim', 'aug', 'sus', 'sus4', 'mM7', 'ø', 'º', 'Maj7', 'min7', '+']
       ending = /(.*)([#b]\d+)\z/
       while type.length
         match = ending.match(type)
@@ -48,6 +48,26 @@ module Chartup
       "#{@root_letter}#{@root_accidental}"
     end
 
+    def formatted_chord_type(type, format)
+      case format
+      when :lilypond
+        chord_names = {'M7' => 'maj7', 'sus' => 'sus4', 'M9' => 'maj9', 'ø' => 'm7.5-', 'mM7' => 'm7+', 'M7#11' => 'maj7.11+', "º" => "dim", '+' => 'aug'}
+
+        chord_types = type.split(/([#b]\d+)/).reject{|x| x.empty? }
+        basic_type = chord_types.shift
+        chord_types = chord_types.map do |type|
+          type.sub(/([#b])(\d+)/) do |match|
+            acc = $1 == '#' ? '+' : '-'
+            ".#{$2}#{acc}"
+          end
+        end
+
+        basic_type = chord_names[basic_type] || basic_type
+
+        type = "#{basic_type}#{chord_types.join('')}"
+      end
+    end
+
     # Format the chord for rendering in a particular notation format.
     # @param format [Symbol] the format - currently only :lilypond.
     # @return [String] the formatted name with length. For long chords, this may appear as multiple chords. (e.g. 'bes\breve:maj7.11+ bes4:maj7.11+')
@@ -60,19 +80,14 @@ module Chartup
           9 => ['\breve', 4], 10 => ['\breve', 2], 11 => ['\breve', '2.'], 12 => '\breve.' }
 
         # Major 7th chords need special handling
-        chord_names = {'M7' => 'maj7', 'sus' => 'sus4', 'M9' => 'maj9', 'ø' => 'm7.5-', 'mM7' => 'm7+', 'M7#11' => 'maj7.11+', "º" => "dim"}
+
 
         accidental = accidentals[root_accidental]
         root = @root_letter.downcase
-        lp_length = lengths[@length]        
-        type = chord_names[@type] || @type
+        lp_length = lengths[@length]
 
-        # Turn chords like G7b9#13 into chords like G7.9-13+
-        chord_extension_regex = /([#b])(\d+)/
-        type.gsub!(chord_extension_regex) do |match|
-          symbol = $1 == '#' ? '+' : '-'
-          ".#{$2}#{symbol}"
-        end
+        # Process chord type
+        type = formatted_chord_type(@type, :lilypond)
 
         # For notes longer than 8, add in breves before the chord.
         if @length > 8
