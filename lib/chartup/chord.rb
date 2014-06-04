@@ -71,41 +71,53 @@ module Chartup
     # Format the chord for rendering in a particular notation format.
     # @param format [Symbol] the format - currently only :lilypond.
     # @return [String] the formatted name with length. For long chords, this may appear as multiple chords. (e.g. 'bes\breve:maj7.11+ bes4:maj7.11+')
-    def formatted_chord_name_with_length(format)
+    def formatted_chord_name_with_length(format=:lilypond)
       case format
       when :lilypond
         accidentals = {'#' => 'is', 'b' => 'es', '##' => 'isis', 'bb' => 'eses'}
-        lengths = {1 => 4, 2 => 2, 3 => '2.', 4 => 1, 
-          5 => [1, 4], 6 => '1.', 7=> '1..', 8 => '\breve', 
-          9 => ['\breve', 4], 10 => ['\breve', 2], 11 => ['\breve', '2.'], 12 => '\breve.' }
 
-        # Major 7th chords need special handling
 
+        # Process chord type
+        type = formatted_chord_type(@type, format)
 
         accidental = accidentals[root_accidental]
         root = @root_letter.downcase
-        lp_length = lengths[@length]
+        chord_lengths = formatted_chord_lengths(length, format)
+ 
+        if chord_lengths.is_a?(Array)
+          chord_lengths.flatten.map {|l| " #{root}#{accidental}#{l}:#{type}"}.join('')
+        else
+          " #{root}#{accidental}#{chord_lengths}:#{type}"
+        end
+      end
+    end
 
-        # Process chord type
-        type = formatted_chord_type(@type, :lilypond)
+    #Return an array of chord lengths, or a single chord length
+    def formatted_chord_lengths(length, format=:lilypond)
+      case format
+      when :lilypond
+
+        lengths = {
+          1 => 4, 2 => 2, 3 => '2.', 4 => 1, 
+          5 => [1, 4], 6 => '1.', 7=> '1..', 8 => '\breve' 
+        }
 
         # For notes longer than 8, add in breves before the chord.
         if @length > 8
           breves = @length / 8
-          final_length = @length % 8
-          if final_length == 0
-            lp_length = []
-          else
-            lp_length = [ lengths[final_length] ]
-          end
-          breves.times { lp_length.unshift(lengths[8])}
-        end
+          remainder = @length % 8
 
-        if lp_length.is_a?(Array)
-          lp_length.map {|l| " #{root}#{accidental}#{l}:#{type}"}.join('')
+          if remainder == 0
+            lengths_array = []
+          else
+            lengths_array = [ lengths[remainder] ]
+          end
+
+          breves.times { lengths_array.unshift(lengths[8]) }
+          lengths_array
+
         else
-          " #{root}#{accidental}#{lp_length}:#{type}"
-            
+          lengths[length]
         end
       end
     end
