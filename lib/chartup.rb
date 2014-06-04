@@ -6,7 +6,7 @@ require_relative 'chartup/chord'
 
 module Chartup
   def Chartup.test_chart
-    d = <<-chart
+    d = %q{
 title: The Song
 composer: You!
 
@@ -24,7 +24,7 @@ Fm - - C#7 | A6 Dm7 F#m9 Eaug | Ddim D7#5 D6 D13 |
 BRIDGE
 --------------
 F | Bb | Gm | A7 | Dm | D7b9b13
-        chart
+}
 
     c = Chartup::Chart.new(d)
   end
