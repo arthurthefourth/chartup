@@ -14,4 +14,30 @@ class ChordTest < MiniTest::Test
     aug = Chartup::Chord.new('Bbb+', 2)
     assert_equal ' beses2:aug', aug.formatted_chord_name_with_length(:lilypond)
   end
+
+  def test_formatted_chord_lengths
+    chords = Chartup::Chord.new('AM7b9#11', 18).formatted_chord_lengths(:lilypond)
+    assert_equal %w{ \breve \breve 2}, chords
+
+    chords2 = Chartup::Chord.new('Bb', 4).formatted_chord_lengths(:lilypond)
+    assert_equal '1', chords2
+  end
+
+  def test_formatted_chord_type
+    chord = Chartup::Chord.new('C#7#9b13', 4)
+    type = chord.formatted_chord_type
+    assert_equal '7.9+.13-', type
+  end
+
+  def good_chord_type
+    good_chords = %w{M7 m9 sus 7b9b13 + dim}
+    bad_chords = %w{M3 7*9 h 91}
+    chord = Chartup::Chord.new('Am', 4)
+    good_chords.each do |c|
+      assert chord.good_chord_type?(c)
+    end
+    bad_chords.each do |c|
+      refute chord.good_chord_type?(c)
+    end
+  end
 end

@@ -48,12 +48,12 @@ module Chartup
       "#{@root_letter}#{@root_accidental}"
     end
 
-    def formatted_chord_type(type, format)
+    def formatted_chord_type(format=:lilypond)
       case format
       when :lilypond
         chord_names = {'M7' => 'maj7', 'sus' => 'sus4', 'M9' => 'maj9', 'ø' => 'm7.5-', 'mM7' => 'm7+', 'M7#11' => 'maj7.11+', "º" => "dim", '+' => 'aug'}
 
-        chord_types = type.split(/([#b]\d+)/).reject{|x| x.empty? }
+        chord_types = @type.split(/([#b]\d+)/).reject{|x| x.empty? }
         basic_type = chord_types.shift
         chord_types = chord_types.map do |type|
           type.sub(/([#b])(\d+)/) do |match|
@@ -78,11 +78,11 @@ module Chartup
 
 
         # Process chord type
-        type = formatted_chord_type(@type, format)
+        type = formatted_chord_type(format)
 
         accidental = accidentals[root_accidental]
         root = @root_letter.downcase
-        chord_lengths = formatted_chord_lengths(length, format)
+        chord_lengths = formatted_chord_lengths(format)
  
         if chord_lengths.is_a?(Array)
           chord_lengths.flatten.map {|l| " #{root}#{accidental}#{l}:#{type}"}.join('')
@@ -93,13 +93,13 @@ module Chartup
     end
 
     #Return an array of chord lengths, or a single chord length
-    def formatted_chord_lengths(length, format=:lilypond)
+    def formatted_chord_lengths(format=:lilypond)
       case format
       when :lilypond
 
         lengths = {
-          1 => 4, 2 => 2, 3 => '2.', 4 => 1, 
-          5 => [1, 4], 6 => '1.', 7=> '1..', 8 => '\breve' 
+          1 => '4', 2 => '2', 3 => '2.', 4 => '1', 
+          5 => ['1', '4'], 6 => '1.', 7=> '1..', 8 => '\breve' 
         }
 
         # For notes longer than 8, add in breves before the chord.
@@ -110,14 +110,14 @@ module Chartup
           if remainder == 0
             lengths_array = []
           else
-            lengths_array = [ lengths[remainder] ]
+            lengths_array = [ lengths[remainder].to_s ]
           end
 
           breves.times { lengths_array.unshift(lengths[8]) }
           lengths_array
 
         else
-          lengths[length]
+          lengths[@length]
         end
       end
     end
