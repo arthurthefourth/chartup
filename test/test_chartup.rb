@@ -15,6 +15,13 @@ class ChartupTest < MiniTest::Test
     assert_match '\new Staff {', Chartup.to_ly('Am')
   end
 
+  def test_to_ly_should_return_the_right_Lilypond_document
+    chartup_doc = File.read('example.chartup')
+    lilypond_doc = File.read('example.ly')
+
+    assert_equal lilypond_doc, Chartup.to_ly(chartup_doc)
+  end
+  
   def test_test_chart_should_be_valid
     Chartup.test_chart
   end
