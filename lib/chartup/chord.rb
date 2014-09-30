@@ -22,10 +22,10 @@ module Chartup
       @root_letter = match[1]
       @root_accidental = match[2]
       @type = match[3]
-      raise Chartup::SyntaxError, "Bad chord type in chord \"#{chord_name}\"" unless good_chord_type?(@type)
+      raise Chartup::SyntaxError, "Bad chord type in chord \"#{chord_name}\"" unless Chord.good_chord_type?(@type)
     end
 
-    def good_chord_type?(type)
+    def self.good_chord_type?(type)
       types = ['', 'm', 'M', 'M7', 'm7', 'M9', 'm9', 'M6', 'm6', 'M11', 'm11', 'M13', 'm13', '5', '6', '7', '9', '11', '13', 'dim', 'aug', 'sus', 'sus4', 'mM7', 'ø', 'º', 'Maj7', 'min7', '+']
       ending = /(.*)([#b]\d+)\z/
       while type.length

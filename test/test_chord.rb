@@ -29,15 +29,18 @@ class ChordTest < MiniTest::Test
     assert_equal '7.9+.13-', type
   end
 
-  def good_chord_type
+  def test_good_chord_types_are_recognized
     good_chords = %w{M7 m9 sus 7b9b13 + dim}
     bad_chords = %w{M3 7*9 h 91}
-    chord = Chartup::Chord.new('Am', 4)
     good_chords.each do |c|
-      assert chord.good_chord_type?(c)
+      assert Chartup::Chord.good_chord_type?(c)
     end
+  end
+
+  def test_bad_chord_types_are_not_recognized
+    bad_chords = %w{M3 7*9 h 91}
     bad_chords.each do |c|
-      refute chord.good_chord_type?(c)
+      refute Chartup::Chord.good_chord_type?(c)
     end
   end
 end

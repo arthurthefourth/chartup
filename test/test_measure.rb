@@ -24,6 +24,35 @@ class MeasureTest < MiniTest::Test
     refute m2.starts_with_repeat
   end
 
+  def test_one_chord_lasts_a_whole_bar
+    measure = Chartup::Measure.new('Am')
+    assert_equal 'Am - - -', measure.to_s
+  end
+
+  def test_two_chords_last_two_beats_each
+    measure = Chartup::Measure.new('Am Dm')
+    assert_equal 'Am - Dm -', measure.to_s
+  end
+
+  def test_third_chords_last_two_beats
+    measure = Chartup::Measure.new('Am Dm E7')
+    assert_equal 'Am Dm E7 -', measure.to_s
+  end
+
+  def test_four_chords_last_one_beat_each
+    measure = Chartup::Measure.new('Am Dm E7 F7')
+    assert_equal 'Am Dm E7 F7', measure.to_s
+  end
+
+  def test_hyphens_extend_the_previous_chord_a_beat
+  end
+
+  def test_hyphens_work_over_barlines
+  end
+
+  def test_hyphens_work_over_staff_lines
+  end
+
   def test_fill_out_chord_strings
     # Specify pairs of valid input with their expected output
     good_pairs = [

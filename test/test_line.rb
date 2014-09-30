@@ -24,6 +24,27 @@ class LineTest < MiniTest::Test
 
   end
 
+  def test_line_can_start_without_a_pipe_character
+    line = Chartup::Line.new('Am  | Dm |', nil, nil, nil)
+    assert_equal 'Am - - - | Dm - - -', line.to_s
+  end
+
+  def test_line_can_start_and_end_with_pipe_characters
+    line = Chartup::Line.new('|Am | Dm |', nil, nil, nil)
+    assert_equal 'Am - - - | Dm - - -', line.to_s
+  end
+
+  def test_line_can_end_without_a_pipe_character
+    line = Chartup::Line.new('| Am  | Dm ', nil, nil, nil)
+    assert_equal 'Am - - - | Dm - - -', line.to_s
+  end
+
+  def test_line_can_start_and_end_without_pipe_characters
+    line = Chartup::Line.new('Am | Dm ', nil, nil, nil)
+    assert_equal 'Am - - - | Dm - - -', line.to_s
+  end
+
+
   def test_last_measure
     l1 = Chartup::Line.new('Am', nil, nil, nil)
     assert_equal 'Am - - -', l1.last_measure.to_s
